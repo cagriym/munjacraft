@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  password         String
+  fullname         String?
+  nickname         String?        @unique
+  birthdate        DateTime?
+  role             Role           @default(USER)
+  rank             Rank           @default(NORMAL)
+  roleAssignedAt   DateTime?
+  phone            String?
+  country          String?
+  city             String?
+  district         String?
+  address          String?
+  bio              String?
+  avatarUrl        String?
+  balance          Decimal        @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  sentMessages     Message[]      @relation("SentMessages")
+  receivedMessages Message[]      @relation("ReceivedMessages")
+  announcements    Announcement[]
+  isBanned         Boolean        @default(false)
+  banReason        String?
+  banUntil         DateTime?
+  banType          BanType?
+  bannedIp         String?
+  isAddressVerified Boolean      @default(false)
+  friendsRequested Friend[]       @relation("Requester")
+  friendsReceived  Friend[]       @relation("Addressee")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Rank {
+  NORMAL
+  VIP
+  MVIP
+  MVIP_PLUS
+  ULTRAVIP
+  MUNJAVIP
+}
+
+enum BanType {
+  SURELI
+  SURESUZ
+  IP_BAN
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId   Int
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId Int
+  content    String
+  sentAt     DateTime @default(now())
+}
+
+model Announcement {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+}
+
+model Friend {
+  id         Int      @id @default(autoincrement())
+  requester  User     @relation("Requester", fields: [requesterId], references: [id])
+  requesterId Int
+  addressee  User     @relation("Addressee", fields: [addresseeId], references: [id])
+  addresseeId Int
+  status     FriendStatus @default(PENDING)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}

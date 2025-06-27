@@ -1,0 +1,92 @@
+const site = document.querySelector("#site");
+function delay(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+function functiondisable() {
+  // To get the scroll position of current webpage
+  TopScroll = window.pageYOffset || document.documentElement.scrollTop;
+  (LeftScroll = window.pageXOffset || document.documentElement.scrollLeft),
+    // if scroll happens, set it to the previous value
+    (window.onscroll = function () {
+      window.scrollTo(LeftScroll, TopScroll);
+    });
+}
+function functionenable() {
+  window.onscroll = function () {};
+}
+const tabMenu = document.querySelector(".tab-menu");
+const menuToggle = document.querySelector("#menu-toggle");
+menuToggle.addEventListener("click", () => {
+  if (menuToggle.classList == "open") {
+    tabMenu.style.opacity = "0";
+    menuToggle.classList.remove("open");
+    delay(1000).then(() => {
+      tabMenu.style.display = "none";
+      functionenable();
+    });
+  } else {
+    menuToggle.classList.add("open");
+    tabMenu.style.display = "flex";
+    delay(100).then(() => {
+      tabMenu.style.opacity = "1";
+    });
+  }
+});
+window.addEventListener("scroll", () => {
+  const header = document.querySelector(".navigation");
+  header.classList.toggle("sticky", window.scrollY > 20);
+});
+
+const buttonAlisveris = document.querySelector("#alisveris-button");
+const buttonMenu = document.querySelector("#menu-button");
+if (window.screen.width <= 500) {
+  buttonAlisveris.innerHTML = 'Alışveriş Yap';
+} else if (window.screen.width > 500) {
+  buttonMenu.innerHTML = "Menümüz";
+  buttonAlisveris.innerHTML = "Alışveriş Yap";
+}
+window.addEventListener("resize", () => {
+  if (window.screen.width <= 500) {
+    buttonMenu.innerHTML = "Menü";
+    buttonAlisveris.innerHTML = 'Alışveriş Yap';
+  } else if (window.screen.width > 500) {
+    buttonMenu.innerHTML = "Menümüz";
+    buttonAlisveris.innerHTML = "Alışveriş Yap";
+  }
+});
+
+if (window.innerWidth > 1024) {
+  window.addEventListener("scroll", () => {
+    const scrolled = window.scrollY;
+    let scaleVideo = 1 - scrolled / 2500;
+    let opacityText = 1 - scrolled / 400;
+    if (scaleVideo <= 0.8) {
+      scaleVideo = 0.8;
+    }
+    let selectText = document.querySelector("#video-text");
+    let selectVideo = document.querySelector(".video");
+    selectVideo.style.transform = "scale(" + scaleVideo + ")";
+    selectText.style.opacity = opacityText;
+  });
+  const stickyElm = document.querySelector(".video-sticky-top");
+  var observer = new IntersectionObserver(
+    function (entries) {
+      if (entries[0].intersectionRatio === 0)
+        document.querySelector(".video-sticky").classList.add("isSticky");
+      else if (entries[0].intersectionRatio == 1)
+        document.querySelector(".video-sticky").classList.remove("isSticky");
+    },
+    { threshold: [0, 1] }
+  );
+
+  observer.observe(stickyElm);
+} else {
+  document.querySelector(".video-sticky").classList.add("isSticky");
+}
+if (window.innerWidth > 768) {
+  document.querySelector(
+    "#evcim-video"
+  ).innerHTML = `<video width="100%" height="100%" src="assetssite/videos/Evcim.mp4" id="sessiz-video" autoplay loop muted playsinline></video><button class="ses-button" onclick="sesAc()">
+              <img src="assetssite/img/icons/soundop.svg" id="ses-resim" alt="ses" width="100%" />
+            </button>`;
+}
