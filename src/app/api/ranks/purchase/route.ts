@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma, Role, Rank } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { nextAuthConfig } from "@/auth"; // Auth.ts'den yapılandırmayı import et
 
 // const prisma = new PrismaClient(); // Bu satırı kaldır
 
-// String'i Role enum'una çeviren yardımcı fonksiyon
-function toRoleEnum(roleName: string): Role {
-  if (Object.values(Role).includes(roleName as Role)) {
-    return roleName as Role;
+// String'i Rank enum'una çeviren yardımcı fonksiyon
+function toRankEnum(rankName: string): Rank {
+  if (Object.values(Rank).includes(rankName as Rank)) {
+    return rankName as Rank;
   }
-  throw new Error(`Invalid role name: ${roleName}`);
+  throw new Error(`Invalid rank name: ${rankName}`);
 }
 
 export async function POST(req: NextRequest) {
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newRole = toRoleEnum(rankName);
+    const newRank = toRankEnum(rankName);
 
     const user = await prisma.user.findUnique({
       where: { id: Number(session.user.id) },
@@ -64,19 +64,19 @@ export async function POST(req: NextRequest) {
         balance: {
           decrement: price,
         },
-        role: newRole,
+        rank: newRank,
         roleAssignedAt: new Date(),
       },
     });
 
     return NextResponse.json({
       id: updatedUser.id.toString(),
-      role: updatedUser.role,
+      rank: updatedUser.rank,
       balance: updatedUser.balance.toNumber(),
     });
   } catch (error) {
     console.error("Satın alma hatası:", error);
-    if (error instanceof Error && error.message.includes("Invalid role name")) {
+    if (error instanceof Error && error.message.includes("Invalid rank name")) {
       return NextResponse.json(
         { message: "Geçersiz rütbe adı." },
         { status: 400 }

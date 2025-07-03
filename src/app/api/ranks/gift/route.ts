@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma, Role, Rank } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { nextAuthConfig } from "@/auth";
 
-function toRoleEnum(roleName: string): Role {
-  if (Object.values(Role).includes(roleName as Role)) {
-    return roleName as Role;
+function toRankEnum(rankName: string): Rank {
+  if (Object.values(Rank).includes(rankName as Rank)) {
+    return rankName as Rank;
   }
-  throw new Error(`Invalid role name: ${roleName}`);
+  throw new Error(`Invalid rank name: ${rankName}`);
 }
 
 export async function POST(req: NextRequest) {
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newRole = toRoleEnum(rankName);
+    const newRank = toRankEnum(rankName);
 
     // Gönderen kullanıcıyı bul
     const sender = await prisma.user.findUnique({
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       }),
       prisma.user.update({
         where: { id: receiver.id },
-        data: { role: newRole, roleAssignedAt: new Date() },
+        data: { rank: newRank, roleAssignedAt: new Date() },
       }),
     ]);
 
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Hediye gönderme hatası:", error);
-    if (error instanceof Error && error.message.includes("Invalid role name")) {
+    if (error instanceof Error && error.message.includes("Invalid rank name")) {
       return NextResponse.json(
         { message: "Geçersiz rütbe adı." },
         { status: 400 }

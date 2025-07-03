@@ -2,13 +2,22 @@
 import { useSearchParams } from "next/navigation";
 import { Toaster, toast } from "sonner";
 import { useEffect } from "react";
+import { Suspense } from "react";
 
 export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={<div>Yükleniyor...</div>}>
+      <AuthErrorContent />
+    </Suspense>
+  );
+}
+
+function AuthErrorContent() {
   const searchParams = useSearchParams();
-  const error = searchParams.get("error");
-  const reason = searchParams.get("reason");
-  const type = searchParams.get("type");
-  const until = searchParams.get("until");
+  const error = searchParams ? searchParams.get("error") : null;
+  const reason = searchParams ? searchParams.get("reason") : null;
+  const type = searchParams ? searchParams.get("type") : null;
+  const until = searchParams ? searchParams.get("until") : null;
 
   useEffect(() => {
     if (error === "ban") {
@@ -38,7 +47,7 @@ export default function AuthErrorPage() {
     // Ban tipi Türkçeleştirme
     let typeLabel = "Belirtilmedi";
     if (type === "SURELI") typeLabel = "Süreli";
-    else if (type === "SURESUZ") typeLabel = "Süresiz";
+    else if (type === "SURESIZ") typeLabel = "Süresiz";
     else if (type === "IP_BAN") typeLabel = "IP Ban";
     else if (type && type !== "-") typeLabel = type;
 
@@ -74,7 +83,7 @@ export default function AuthErrorPage() {
               <b>Ban Bitiş Tarihi:</b> {new Date(until).toLocaleString("tr-TR")}
             </div>
           ) : null}
-          {type === "SURESUZ" && (
+          {type === "SURESIZ" && (
             <div style={{ fontSize: 18, marginBottom: 8 }}>
               <b>Ban Bitiş Tarihi:</b> Süresiz
             </div>

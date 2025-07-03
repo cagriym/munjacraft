@@ -13,6 +13,7 @@ import HeroVideo from "@/components/HeroVideo";
 import { useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import FeatureSlider from "@/components/FeatureSlider";
 
 export default function Home() {
   const { scrollYProgress } = useScroll();
@@ -54,35 +55,7 @@ export default function Home() {
         </section>
         {/* Features Section */}
         <section className="w-full flex justify-center py-12 px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl w-full animate-fade-in-up">
-            <div className="bg-white/10 rounded-xl p-6 flex flex-col items-center text-center border border-white/10 shadow-lg">
-              <FaShieldAlt className="text-3xl text-primary mb-2" />
-              <h3 className="text-lg font-semibold text-white mb-1">
-                Güvenlik
-              </h3>
-              <p className="text-gray-300 text-sm">
-                Tüm üyeler ve verileriniz güvenle korunur.
-              </p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-6 flex flex-col items-center text-center border border-white/10 shadow-lg">
-              <FaComments className="text-3xl text-primary mb-2" />
-              <h3 className="text-lg font-semibold text-white mb-1">
-                Topluluk
-              </h3>
-              <p className="text-gray-300 text-sm">
-                Aktif mesajlaşma ve topluluk etkileşimi.
-              </p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-6 flex flex-col items-center text-center border border-white/10 shadow-lg">
-              <FaUserEdit className="text-3xl text-primary mb-2" />
-              <h3 className="text-lg font-semibold text-white mb-1">
-                Kişiselleştirme
-              </h3>
-              <p className="text-gray-300 text-sm">
-                Profilini dilediğin gibi düzenle ve öne çık.
-              </p>
-            </div>
-          </div>
+          <FeatureSlider />
         </section>
         <section
           id="news"

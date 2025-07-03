@@ -24,6 +24,10 @@ export async function POST(req: Request) {
     if (user.isBanned) {
       return NextResponse.json({ error: "BANNED_USER" }, { status: 403 });
     }
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastSeen: new Date() },
+    });
     return NextResponse.json({
       success: true,
       user: { id: user.id, email: user.email, nickname: user.nickname },

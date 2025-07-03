@@ -7,8 +7,12 @@ import { Friend, User } from "@prisma/client";
 // GET: /api/friends - kullanıcının arkadaş listesini getir
 export async function GET(req: Request) {
   const session = await getServerSession(nextAuthConfig);
+  console.log("FRIENDS API SESSION:", session);
   if (!session || !session.user?.id) {
-    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Yetkisiz", debug: { session } },
+      { status: 401 }
+    );
   }
   const userId = Number(session.user.id);
   // Kabul edilmiş arkadaşlıklar (her iki taraf da olabilir)
@@ -18,8 +22,28 @@ export async function GET(req: Request) {
       OR: [{ requesterId: userId }, { addresseeId: userId }],
     },
     include: {
-      requester: true,
-      addressee: true,
+      requester: {
+        select: {
+          id: true,
+          lastSeen: true,
+          avatar: true,
+          nickname: true,
+          fullname: true,
+          email: true,
+          role: true,
+        },
+      },
+      addressee: {
+        select: {
+          id: true,
+          lastSeen: true,
+          avatar: true,
+          nickname: true,
+          fullname: true,
+          email: true,
+          role: true,
+        },
+      },
     },
   });
   // Karşı tarafı bul
@@ -32,13 +56,29 @@ export async function GET(req: Request) {
 // POST: /api/friends - arkadaşlık isteği gönder
 export async function POST(req: Request) {
   const session = await getServerSession(nextAuthConfig);
+  console.log("FRIENDS API SESSION:", session);
   if (!session || !session.user?.id) {
-    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Yetkisiz", debug: { session } },
+      { status: 401 }
+    );
   }
   const userId = Number(session.user.id);
   const { toUserId } = await req.json();
   if (!toUserId || userId === Number(toUserId)) {
     return NextResponse.json({ error: "Geçersiz kullanıcı" }, { status: 400 });
+  }
+  // Ban kontrolü
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const now = new Date();
+  // Sadece aktif banlı kullanıcıyı engelle
+  const aktifBan =
+    user?.isBanned && (!user.banUntil || new Date(user.banUntil) > now);
+  if (aktifBan) {
+    return NextResponse.json(
+      { error: "Banlı olduğunuz için arkadaş ekleyemezsiniz." },
+      { status: 403 }
+    );
   }
   // Zaten arkadaş veya istek varsa tekrar ekleme
   const existing = await prisma.friend.findFirst({
@@ -55,11 +95,16 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
+  // Admin otomatik kabul
+  const toUser = await prisma.user.findUnique({
+    where: { id: Number(toUserId) },
+  });
+  const isAdmin = user?.role === "ADMIN" || toUser?.role === "ADMIN";
   const friend = await prisma.friend.create({
     data: {
       requesterId: userId,
       addresseeId: Number(toUserId),
-      status: "PENDING",
+      status: isAdmin ? "ACCEPTED" : "PENDING",
     },
   });
   return NextResponse.json({ success: true, friend });
@@ -68,8 +113,12 @@ export async function POST(req: Request) {
 // PATCH: /api/friends - istek kabul/ret
 export async function PATCH(req: Request) {
   const session = await getServerSession(nextAuthConfig);
+  console.log("FRIENDS API SESSION:", session);
   if (!session || !session.user?.id) {
-    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Yetkisiz", debug: { session } },
+      { status: 401 }
+    );
   }
   const userId = Number(session.user.id);
   const { friendId, action } = await req.json(); // action: "accept" | "reject"
@@ -93,8 +142,12 @@ export async function PATCH(req: Request) {
 // DELETE: /api/friends - arkadaş sil
 export async function DELETE(req: Request) {
   const session = await getServerSession(nextAuthConfig);
+  console.log("FRIENDS API SESSION:", session);
   if (!session || !session.user?.id) {
-    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Yetkisiz", debug: { session } },
+      { status: 401 }
+    );
   }
   const userId = Number(session.user.id);
   const { friendId } = await req.json();

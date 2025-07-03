@@ -2,13 +2,28 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { nextAuthConfig } from "@/auth";
 import { PrismaClient } from "@prisma/client";
+import stringSimilarity from "string-similarity";
 
 const prisma = new PrismaClient();
 
 export async function GET(req: Request) {
   const session = await getServerSession(nextAuthConfig);
-  if (!session || session.user?.role !== "ADMIN") {
-    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  const { searchParams } = new URL(req.url);
+  const q = searchParams.get("q")?.toLowerCase() || "";
+  const userId = Number(session?.user?.id);
+  // Ban kontrolü
+  if (userId) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const now = new Date();
+    // Sadece aktif banlı kullanıcıyı engelle
+    const aktifBan =
+      user?.isBanned && (!user.banUntil || new Date(user.banUntil) > now);
+    if (aktifBan) {
+      return NextResponse.json(
+        { error: "Banlı olduğunuz için kullanıcı arayamazsınız." },
+        { status: 403 }
+      );
+    }
   }
   const users = await prisma.user.findMany({
     select: {
@@ -26,7 +41,21 @@ export async function GET(req: Request) {
     },
     orderBy: { id: "asc" },
   });
-  return NextResponse.json({ users });
+  let filtered = users;
+  if (q) {
+    filtered = users.filter((u) => {
+      const nick = u.nickname?.toLowerCase() || "";
+      const mail = u.email?.toLowerCase() || "";
+      // Fuzzy benzerlik oranı %0.5 üzerindeyse veya includes ise eşleşme kabul
+      return (
+        stringSimilarity.compareTwoStrings(nick, q) > 0.5 ||
+        stringSimilarity.compareTwoStrings(mail, q) > 0.5 ||
+        nick.includes(q) ||
+        mail.includes(q)
+      );
+    });
+  }
+  return NextResponse.json({ users: filtered });
 }
 
 export async function DELETE(req: Request) {

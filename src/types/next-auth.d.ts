@@ -9,6 +9,9 @@ declare module "next-auth" {
       role: Role;
       balance: number;
       isAddressVerified?: boolean;
+      avatar?: string;
+      nickname?: string;
+      fullname?: string;
     } & DefaultSession["user"];
   }
 
@@ -16,6 +19,9 @@ declare module "next-auth" {
     role: Role;
     balance: number;
     isAddressVerified?: boolean;
+    avatar?: string;
+    nickname?: string;
+    fullname?: string;
   }
 }
 
@@ -25,5 +31,8 @@ declare module "next-auth/jwt" {
     role: Role;
     balance: number;
     isAddressVerified?: boolean;
+    avatar?: string;
+    nickname?: string;
+    fullname?: string;
   }
 }

@@ -38,7 +38,7 @@ export const nextAuthConfig = {
               district: true,
               address: true,
               bio: true,
-              avatarUrl: true,
+              avatar: true,
               balance: true,
               createdAt: true,
               updatedAt: true,
@@ -66,6 +66,9 @@ export const nextAuthConfig = {
             role: user.role,
             balance: user.balance.toNumber(),
             isAddressVerified: user.isAddressVerified,
+            avatar: user.avatar ?? undefined,
+            nickname: user.nickname ?? undefined,
+            fullname: user.fullname ?? undefined,
           };
         } catch (e: any) {
           // NextAuth error handling: error.message will be passed to frontend
@@ -85,7 +88,25 @@ export const nextAuthConfig = {
         token.role = user.role;
         token.balance = user.balance;
         token.isAddressVerified = user.isAddressVerified;
+        token.avatar = user.avatar;
+        token.nickname = user.nickname;
+        token.fullname = user.fullname;
       }
+
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: Number(token.id) },
+        });
+        if (dbUser) {
+          token.balance = dbUser.balance.toNumber();
+          token.role = dbUser.role;
+          token.isAddressVerified = dbUser.isAddressVerified;
+          token.avatar = dbUser.avatar ?? undefined;
+          token.nickname = dbUser.nickname ?? undefined;
+          token.fullname = dbUser.fullname ?? undefined;
+        }
+      }
+
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
@@ -94,6 +115,9 @@ export const nextAuthConfig = {
         session.user.role = token.role;
         session.user.balance = token.balance;
         session.user.isAddressVerified = token.isAddressVerified;
+        session.user.avatar = token.avatar;
+        session.user.nickname = token.nickname;
+        session.user.fullname = token.fullname;
       }
       return session;
     },

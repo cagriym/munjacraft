@@ -9,6 +9,7 @@ import {
   LogOut,
   Loader2,
   MoreHorizontal,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -174,6 +175,12 @@ export default function AdminDashboardPage() {
       icon: Users,
       href: "/admin/users",
     },
+    {
+      id: "istekler",
+      label: "İstekler",
+      icon: Mail,
+      href: "/admin/istekler",
+    },
   ];
 
   const renderContent = () => {
@@ -187,37 +194,38 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 pt-[88px]">
-      <aside className="w-64 bg-white dark:bg-gray-800 p-6 flex flex-col justify-between">
+      <aside className="w-60 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-3 md:p-4 flex flex-col justify-between border-r border-gray-200 dark:border-gray-700">
         <div>
-          <h2 className="text-lg font-semibold mb-6 text-gray-700 dark:text-gray-200">
+          <h2 className="text-2xl font-bold mb-6 text-gray-700 dark:text-gray-200">
             Admin Paneli
           </h2>
           <nav className="flex flex-col gap-2">
             {menuItems.map((item) => (
-              <button
+              <Link
                 key={item.id}
-                onClick={() => router.push(item.href)}
-                className={`flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${
-                  activeTab === item.id
+                href={item.href}
+                className={`flex items-center gap-3 px-3 py-2 md:px-4 md:py-3 rounded-lg text-left text-base md:text-lg transition-colors ${
+                  typeof window !== "undefined" &&
+                  window.location.pathname === item.href
                     ? "bg-primary text-white"
                     : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-6 w-6" />
                 <span>{item.label}</span>
-              </button>
+              </Link>
             ))}
           </nav>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex items-center gap-3 px-4 py-2 rounded-lg text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
+          className="flex items-center gap-3 px-3 py-2 md:px-4 md:py-3 rounded-lg text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors text-base md:text-lg"
         >
-          <LogOut className="h-5 w-5" />
+          <LogOut className="h-6 w-6" />
           <span>Çıkış yap</span>
         </button>
       </aside>
-      <main className="flex-1 p-8">{renderContent()}</main>
+      <main className="flex-1 p-2 md:p-6 lg:p-8">{renderContent()}</main>
     </div>
   );
 }

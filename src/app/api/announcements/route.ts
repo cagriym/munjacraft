@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -8,7 +7,11 @@ const prisma = new PrismaClient();
 // GET: /api/announcements
 export async function GET() {
   const announcements = await prisma.announcement.findMany({
-    include: { author: { select: { id: true, name: true, email: true } } },
+    include: {
+      author: {
+        select: { id: true, fullname: true, nickname: true, email: true },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
   return NextResponse.json({ announcements });
@@ -16,7 +19,7 @@ export async function GET() {
 
 // POST: /api/announcements
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
   if (!session || session.user?.role !== "ADMIN") {
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
   }
@@ -39,7 +42,7 @@ export async function POST(req: Request) {
 
 // DELETE: /api/announcements
 export async function DELETE(req: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
   if (!session || session.user?.role !== "ADMIN") {
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
   }

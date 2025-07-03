@@ -12,6 +12,7 @@ body {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  @apply bg-gray-100 text-foreground text-base md:text-lg;
 }
 
 * {
@@ -104,4 +105,18 @@ a {
   max-height: 300px !important;
   overflow-y: auto !important;
   z-index: 9999 !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent !important;
+}
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }

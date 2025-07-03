@@ -5,6 +5,15 @@ import { useSession } from "next-auth/react";
 import { Badge } from "@/components/ui/badge";
 import { Toaster, toast } from "sonner";
 import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 // Kullanıcı bilgilerini ve rütbeleri tanımlayan arayüzler
 interface UserProfile {
@@ -113,6 +122,12 @@ export default function RanksPage() {
   );
   const [profile, setProfile] = useState<any>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [showRankInfo, setShowRankInfo] = useState(false);
+  const [showBalanceModal, setShowBalanceModal] = useState(false);
+  const [balanceAmount, setBalanceAmount] = useState("");
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [balanceError, setBalanceError] = useState("");
+  const [balanceBlur, setBalanceBlur] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -123,6 +138,7 @@ export default function RanksPage() {
       setLoadingProfile(false);
     };
     fetchProfile();
+    (window as any).fetchProfile = fetchProfile;
   }, []);
 
   const handlePurchase = async (rank: Rank) => {
@@ -154,11 +170,50 @@ export default function RanksPage() {
       }
 
       await update();
+      if (typeof (window as any).fetchProfile === "function")
+        (window as any).fetchProfile();
       toast.success(
         `${rankNameToDisplay[rank.name]} rütbesi başarıyla satın alındı!`
       );
     } catch (error: any) {
       toast.error(error.message);
+    }
+  };
+
+  const handleLoadBalance = async () => {
+    const amount = parseFloat(balanceAmount);
+    if (isNaN(amount) || amount <= 0) {
+      setBalanceError("Lütfen geçerli bir tutar girin.");
+      return;
+    }
+    if (amount < 50) {
+      setBalanceError("Minimum 50 TL bakiye yükleyebilirsiniz.");
+      return;
+    }
+    setBalanceError("");
+    setBalanceLoading(true);
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ balance: amount }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Bakiye güncellenemedi.");
+      }
+      await update(); // Session'ı güncelle
+      if (typeof (window as any).fetchProfile === "function") {
+        (window as any).fetchProfile(); // Profil bilgisini yeniden çek
+      }
+      toast.success("Bakiye başarıyla yüklendi!");
+      setShowBalanceModal(false);
+      setBalanceAmount("");
+    } catch (error: any) {
+      setBalanceError(error.message);
+      toast.error(error.message);
+    } finally {
+      setBalanceLoading(false);
     }
   };
 
@@ -187,6 +242,8 @@ export default function RanksPage() {
       toast.success(data.message || "Hediye başarıyla gönderildi!");
       setGiftNick((prev) => ({ ...prev, [rank.name]: "" }));
       await update();
+      if (typeof (window as any).fetchProfile === "function")
+        (window as any).fetchProfile();
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -242,54 +299,102 @@ export default function RanksPage() {
 
   // Artık session.user'ın varlığından eminiz.
   const { user } = session;
+  const isAdmin = user?.role === "ADMIN";
 
   return (
-    <div className="container mx-auto p-4 md:p-8 text-white relative">
-      <Toaster position="top-center" richColors />
-      <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-2 text-black">Rütbe Mağazası</h1>
-        <p className="text-lg text-black font-bold">
-          Kendinize en uygun rütbeyi seçerek ayrıcalıklardan yararlanın!
-        </p>
-        <div className="mt-4 p-4 bg-white/10 rounded-lg inline-block">
-          <h2 className="text-xl font-bold text-black">Mevcut Durumunuz</h2>
-          <div className="flex flex-col items-center justify-center gap-4 mt-2">
-            <span
-              className={`text-4xl font-extrabold ${
-                rankEffects[profile?.role || "USER"] || ""
-              }`}
-              style={{ letterSpacing: 2 }}
-            >
-              {profile
-                ? rankNameToDisplay[profile.role] || "Bilinmiyor"
-                : "..."}
-            </span>
-            <Badge variant="secondary">
-              Bakiyeniz: {Number(profile?.balance ?? 0).toFixed(2)} TL
-            </Badge>
-          </div>
+    <div className="container mx-auto p-4 text-black">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-4xl font-bold">Rütbe Mağazası</h1>
+        <div className="text-right">
+          <h3 className="text-lg font-semibold text-orange-400">
+            Hemen Bakiye Yükle!
+          </h3>
+          <Button
+            onClick={() => setShowBalanceModal(true)}
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold"
+          >
+            Yükle
+          </Button>
         </div>
-      </header>
-      {/* Sayaç sağ alt köşe */}
-      {profile?.roleAssignedAt && (
-        <div className="fixed bottom-6 right-6 bg-black/80 text-white rounded-lg shadow-lg p-4 z-50 flex flex-col items-end">
-          <div className="text-lg font-bold mb-1">
-            Rütbe Başlangıcı: {alisTarihi?.toLocaleString("tr-TR")}
-          </div>
-          <div className="text-md font-semibold mb-1">
-            Bitiş: {bitisTarihi?.toLocaleString("tr-TR")}
-          </div>
-          <div className="text-2xl font-extrabold text-green-400">
-            {kalanGun} gün {kalanSaat} saat kaldı
-          </div>
-        </div>
-      )}
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      <Dialog open={showBalanceModal} onOpenChange={setShowBalanceModal}>
+        <DialogContent className="bg-gray-800 text-white border-gray-700">
+          <DialogHeader>
+            <DialogTitle>Bakiye Yükle</DialogTitle>
+            <DialogDescription>
+              Yüklemek istediğiniz tutarı girin. Minimum 50 TL
+              yükleyebilirsiniz.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              type="number"
+              value={balanceAmount}
+              onChange={(e) => setBalanceAmount(e.target.value)}
+              placeholder="Tutar (örn: 100)"
+              className="bg-gray-700 border-gray-600 text-white"
+              min="50"
+            />
+            {balanceError && (
+              <p className="text-red-500 text-sm mt-2">{balanceError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowBalanceModal(false)}
+            >
+              İptal
+            </Button>
+            <Button
+              onClick={handleLoadBalance}
+              disabled={balanceLoading}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              {balanceLoading ? "Yükleniyor..." : "Onayla"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <div className="bg-gray-800/10 backdrop-blur-sm p-4 rounded-lg mb-6 flex justify-between items-center">
+        <div>
+          <span className="text-lg">Mevcut Rütben: </span>
+          <span
+            className={`text-2xl font-bold ${
+              rankEffects[
+                profile?.role === "ADMIN" ? "ADMIN" : profile?.rank || "USER"
+              ] || ""
+            }`}
+          >
+            {profile
+              ? profile.role === "ADMIN"
+                ? rankNameToDisplay["ADMIN"]
+                : rankNameToDisplay[profile.rank] || "Kullanıcı"
+              : "..."}
+          </span>
+        </div>
+        <div>
+          <span className="text-lg">Bakiye: </span>
+          <span
+            className={`font-bold transition-all duration-300 ${
+              balanceBlur ? "blur-sm" : "blur-none"
+            }`}
+            onClick={() => setBalanceBlur((prev) => !prev)}
+            style={{ cursor: "pointer" }}
+            title="Bakiyeyi göster/gizle"
+          >
+            {Number(profile?.balance ?? 0).toFixed(2)} TL
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {ranks.map((rank) => (
           <Card
             key={rank.name}
-            className="bg-gray-800 border-gray-700 text-white flex flex-col"
+            className="bg-gray-800 border-gray-700 text-white flex flex-col min-w-[260px] max-w-[320px] w-full sm:w-[300px]"
           >
             <CardHeader className={`text-white rounded-t-lg ${rank.color}`}>
               <CardTitle className="text-2xl font-bold text-center">
@@ -311,16 +416,18 @@ export default function RanksPage() {
                   </li>
                 ))}
               </ul>
-              <Button
-                className={`mt-6 w-full ${rank.color} hover:brightness-110`}
-                onClick={() => handlePurchase(rank)}
-              >
-                Satın Al
-              </Button>
+              {!isAdmin && (
+                <Button
+                  className={`mt-6 w-full ${rank.color} hover:brightness-110`}
+                  onClick={() => handlePurchase(rank)}
+                >
+                  Satın Al
+                </Button>
+              )}
               <div className="mt-4 flex flex-col gap-2">
                 <input
                   type="text"
-                  className="rounded px-3 py-2 text-black"
+                  className="rounded px-3 py-2 text-white bg-gray-800 placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Oyun nickini girin"
                   value={giftNick[rank.name] || ""}
                   onChange={(e) =>

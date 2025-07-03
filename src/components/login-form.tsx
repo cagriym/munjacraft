@@ -189,7 +189,6 @@ export function LoginForm({
           </div>
         </CardContent>
       </Card>
-      <Toaster position="top-center" richColors />
     </div>
   );
 }

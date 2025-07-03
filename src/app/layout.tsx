@@ -3,6 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Providers from "@/components/Providers";
+import { Toaster } from "sonner";
+import FloatingContactBubble from "@/components/FloatingContactBubble";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className + " bg-gray-100 min-h-screen"}>
         <Providers>
           <Navbar />
-          <div className="pt-20">{children}</div>
+          <Toaster position="bottom-center" richColors />
+          <div className="pt-20 px-0 md:px-0 lg:px-0">{children}</div>
+          <FloatingContactBubble />
         </Providers>
       </body>
     </html>
