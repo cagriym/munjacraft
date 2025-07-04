@@ -1,0 +1,9 @@
+next
+prisma
+@prisma/client
+sqlite3
+tailwindcss
+shadcn-ui
+react
+react-dom
+bun 
