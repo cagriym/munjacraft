@@ -1,0 +1,7 @@
+# Ignore generated and build files
+src/generated/
+*.js
+*.map
+node_modules/
+.next/
+prisma/migrations/ 
