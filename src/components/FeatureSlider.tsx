@@ -41,6 +41,7 @@ export default function FeatureSlider() {
 
     function animate() {
       start -= speed;
+      if (!slider) return;
       if (Math.abs(start) >= slider.scrollWidth / 2) {
         start = 0;
       }

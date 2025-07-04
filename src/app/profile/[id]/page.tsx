@@ -5,25 +5,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "next-auth/react";
 
-const rankEffects: { [key: string]: string } = {
-  VIP: "text-green-500 drop-shadow-lg animate-pulse",
-  MVIP: "text-blue-500 drop-shadow-lg animate-bounce",
-  MVIP_PLUS: "text-blue-300 drop-shadow-lg animate-pulse",
-  ULTRAVIP: "text-purple-500 drop-shadow-lg animate-bounce",
-  MUNJAVIP: "text-orange-500 drop-shadow-lg animate-pulse",
-  ADMIN: "text-red-500 drop-shadow-lg animate-bounce",
-  USER: "text-gray-500",
-};
-const rankNameToDisplay: { [key: string]: string } = {
-  VIP: "VIP",
-  MVIP: "MVIP",
-  MVIP_PLUS: "MVIP+",
-  ULTRAVIP: "UltraVIP",
-  MUNJAVIP: "MunjaVIP",
-  ADMIN: "Admin",
-  USER: "Kullanıcı",
-};
-
 export default function PublicProfilePage() {
   const params = useParams();
   const userId = params?.id;
@@ -81,19 +62,22 @@ export default function PublicProfilePage() {
             {user.nickname || user.fullname}
           </CardTitle>
           <div className="flex gap-2 mt-2">
-            <span
-              className={`text-xl font-bold ${
-                rankEffects[
-                  user.role === "ADMIN" ? "ADMIN" : user.rank || "USER"
-                ] || ""
-              }`}
+            <Badge
+              variant={
+                user.role === "ADMIN"
+                  ? "destructive"
+                  : user.role === "VIP"
+                  ? "secondary"
+                  : "outline"
+              }
             >
-              {user
-                ? user.role === "ADMIN"
-                  ? rankNameToDisplay["ADMIN"]
-                  : rankNameToDisplay[user.rank] || "Kullanıcı"
-                : "..."}
-            </span>
+              {user.role === "ADMIN"
+                ? "Admin"
+                : user.role === "VIP"
+                ? "VIP"
+                : user.role}
+            </Badge>
+            <Badge variant="secondary">{user.rank}</Badge>
             {user.isBanned && <Badge variant="destructive">Banlı</Badge>}
           </div>
           {session?.user?.id &&

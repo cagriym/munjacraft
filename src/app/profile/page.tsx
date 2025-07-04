@@ -1504,38 +1504,35 @@ const Messages = ({
                   f.lastSeen &&
                   new Date(f.lastSeen) > new Date(Date.now() - 10 * 1000);
                 return (
-                  <Link
+                  <li
                     key={f.id}
-                    href={`/profile/${f.id}`}
-                    className="block"
-                    style={{ textDecoration: "none", color: "inherit" }}
+                    className={`flex items-center gap-2 mb-1 ${
+                      isOnline ? "" : "text-gray-400"
+                    }`}
                   >
-                    <li
-                      className={`flex items-center gap-2 mb-1 cursor-pointer ${
-                        isOnline ? "" : "text-gray-400"
-                      }`}
+                    {f.avatar ? (
+                      <img
+                        src={f.avatar}
+                        alt="Avatar"
+                        className="w-6 h-6 rounded-full object-cover border"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black">
+                        {f.nickname?.[0]?.toUpperCase() ||
+                          f.fullname?.[0]?.toUpperCase() ||
+                          "?"}
+                      </div>
+                    )}
+                    <a
+                      href={`/profile/${f.id}`}
+                      className="font-semibold hover:underline"
                     >
-                      {f.avatar ? (
-                        <img
-                          src={f.avatar}
-                          alt="Avatar"
-                          className="w-6 h-6 rounded-full object-cover border mr-2 self-end"
-                        />
-                      ) : (
-                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black mr-2 self-end">
-                          {f.nickname?.[0]?.toUpperCase() ||
-                            f.fullname?.[0]?.toUpperCase() ||
-                            "?"}
-                        </div>
-                      )}
-                      <span className="font-semibold">
-                        {f.nickname || f.fullname || f.email}
-                      </span>
-                      {isOnline && (
-                        <span className="w-2 h-2 rounded-full bg-green-500 inline-block ml-1" />
-                      )}
-                    </li>
-                  </Link>
+                      {f.nickname || f.fullname || f.email}
+                    </a>
+                    {isOnline && (
+                      <span className="w-2 h-2 rounded-full bg-green-500 inline-block ml-1" />
+                    )}
+                  </li>
                 );
               })}
             </ul>
@@ -2017,38 +2014,35 @@ export default function ProfilePage() {
                         f.lastSeen &&
                         new Date(f.lastSeen) > new Date(Date.now() - 10 * 1000);
                       return (
-                        <Link
+                        <li
                           key={f.id}
-                          href={`/profile/${f.id}`}
-                          className="block"
-                          style={{ textDecoration: "none", color: "inherit" }}
+                          className={`flex items-center gap-2 mb-1 ${
+                            isOnline ? "" : "text-gray-400"
+                          }`}
                         >
-                          <li
-                            className={`flex items-center gap-2 mb-1 cursor-pointer ${
-                              isOnline ? "" : "text-gray-400"
-                            }`}
+                          {f.avatar ? (
+                            <img
+                              src={f.avatar}
+                              alt="Avatar"
+                              className="w-6 h-6 rounded-full object-cover border"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black">
+                              {f.nickname?.[0]?.toUpperCase() ||
+                                f.fullname?.[0]?.toUpperCase() ||
+                                "?"}
+                            </div>
+                          )}
+                          <a
+                            href={`/profile/${f.id}`}
+                            className="font-semibold hover:underline"
                           >
-                            {f.avatar ? (
-                              <img
-                                src={f.avatar}
-                                alt="Avatar"
-                                className="w-6 h-6 rounded-full object-cover border mr-2 self-end"
-                              />
-                            ) : (
-                              <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black mr-2 self-end">
-                                {f.nickname?.[0]?.toUpperCase() ||
-                                  f.fullname?.[0]?.toUpperCase() ||
-                                  "?"}
-                              </div>
-                            )}
-                            <span className="font-semibold">
-                              {f.nickname || f.fullname || f.email}
-                            </span>
-                            {isOnline && (
-                              <span className="w-2 h-2 rounded-full bg-green-500 inline-block ml-1" />
-                            )}
-                          </li>
-                        </Link>
+                            {f.nickname || f.fullname || f.email}
+                          </a>
+                          {isOnline && (
+                            <span className="w-2 h-2 rounded-full bg-green-500 inline-block ml-1" />
+                          )}
+                        </li>
                       );
                     })}
                     {friends.length === 0 && (

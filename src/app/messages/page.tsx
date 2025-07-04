@@ -6,7 +6,6 @@ import {
   ChangeEvent,
   Suspense,
   useRef,
-  useCallback,
 } from "react";
 import { getSocket } from "@/lib/socket";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -24,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import Image from "next/image";
 
 type User = {
   id: number;
@@ -51,6 +51,13 @@ type Conversation = User & {
   unreadCount?: number;
 };
 
+type Friend = {
+  id: number;
+  requesterId: number;
+  addressee: User;
+  requester: User;
+};
+
 export default function MessagesPage() {
   return (
     <Suspense fallback={<div>Yükleniyor...</div>}>
@@ -75,10 +82,10 @@ function MessagesPageContent() {
   const [addLoading, setAddLoading] = useState(false);
   const [addError, setAddError] = useState("");
   const [pendingRequests, setPendingRequests] = useState<{
-    incoming: any[];
-    outgoing: any[];
+    incoming: Friend[];
+    outgoing: Friend[];
   }>({ incoming: [], outgoing: [] });
-  const [friends, setFriends] = useState<any[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const messagesPanelRef = useRef<HTMLDivElement>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
@@ -180,6 +187,7 @@ function MessagesPageContent() {
       .then((res) => res.json())
       .then((data) => {
         if (data.friends) setFriends(data.friends);
+        console.log("FRIENDS:", data.friends);
       });
   }, [me]);
 
@@ -238,7 +246,7 @@ function MessagesPageContent() {
         focusMessageInput();
       }, 10);
     }
-  }, [message, loading]);
+  }, [message, loading, focusMessageInput]);
 
   // 2. Scroll event handler fonksiyonunu dışarı al
   function handleScroll(
@@ -368,35 +376,22 @@ function MessagesPageContent() {
             placeholder="Kullanıcı ara..."
           />
         </div>
-        <div className="p-0">
+        <div className="p-0" style={{ maxHeight: 220, overflowY: "auto" }}>
           <ul className="divide-y">
             {conversations.map((c) => {
-              const online =
-                // @ts-ignore
-                c.lastSeen &&
-                // @ts-ignore
-                new Date(c.lastSeen) > new Date(Date.now() - 2 * 60 * 1000);
+              console.log("CONV ITEM:", c);
               return (
                 <li
                   key={c.id}
-                  className={`flex items-center gap-2 mb-1 cursor-pointer ${
-                    online ? "" : "text-gray-400 bg-gray-100"
-                  }`}
+                  className="flex items-center gap-2 mb-1 cursor-pointer"
                   onClick={() => setSelectedUser(String(c.id))}
+                  style={{ background: "white" }}
                 >
-                  {c.avatar ? (
-                    <img
-                      src={c.avatar}
-                      alt="Avatar"
-                      className="w-6 h-6 rounded-full object-cover border"
-                    />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black">
-                      {c.nickname?.[0]?.toUpperCase() ||
-                        c.fullname?.[0]?.toUpperCase() ||
-                        "?"}
-                    </div>
-                  )}
+                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black mr-2 self-end">
+                    {c.nickname?.[0]?.toUpperCase() ||
+                      c.fullname?.[0]?.toUpperCase() ||
+                      "?"}
+                  </div>
                   <span className="font-semibold">
                     {c.nickname || c.fullname || c.email}
                   </span>
@@ -408,7 +403,10 @@ function MessagesPageContent() {
         <div className="p-4 border-b">
           <h2 className="text-xl font-bold">Arkadaşlarım</h2>
         </div>
-        <div className="p-4 space-y-2">
+        <div
+          className="p-4 space-y-2"
+          style={{ maxHeight: 180, overflowY: "auto" }}
+        >
           {friends?.map((friend) => (
             <Link
               href={`/profile/${
@@ -418,8 +416,9 @@ function MessagesPageContent() {
               }`}
               key={friend.id}
               className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700 cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
             >
-              <img
+              <Image
                 src={
                   (friend.requesterId === me.id
                     ? friend.addressee.avatar
@@ -431,6 +430,8 @@ function MessagesPageContent() {
                   }`
                 }
                 alt="avatar"
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full object-cover"
               />
               <span className="font-semibold">
@@ -495,13 +496,15 @@ function MessagesPageContent() {
                   className={`flex ${isMe ? "justify-end" : "justify-start"}`}
                 >
                   {!isMe && otherUser && (
-                    <img
+                    <Image
                       src={otherUser.avatar || "/default-avatar.png"}
                       alt={
                         otherUser.nickname ||
                         otherUser.fullname ||
                         otherUser.email
                       }
+                      width={32}
+                      height={32}
                       className="w-8 h-8 rounded-full object-cover border mr-2 self-end"
                     />
                   )}
@@ -543,9 +546,11 @@ function MessagesPageContent() {
                     </div>
                   </div>
                   {isMe && me && (
-                    <img
+                    <Image
                       src={me.avatar || "/default-avatar.png"}
                       alt={me.nickname || me.fullname || me.email}
+                      width={32}
+                      height={32}
                       className="w-8 h-8 rounded-full object-cover border ml-2 self-end"
                     />
                   )}
@@ -644,9 +649,11 @@ function MessagesPageContent() {
                             className="text-sm flex items-center gap-2"
                           >
                             {req.requester?.avatar ? (
-                              <img
+                              <Image
                                 src={req.requester.avatar}
                                 alt="Avatar"
+                                width={24}
+                                height={24}
                                 className="w-6 h-6 rounded-full object-cover border"
                               />
                             ) : (
@@ -678,9 +685,11 @@ function MessagesPageContent() {
                             className="text-sm flex items-center gap-2"
                           >
                             {req.addressee?.avatar ? (
-                              <img
+                              <Image
                                 src={req.addressee.avatar}
                                 alt="Avatar"
+                                width={24}
+                                height={24}
                                 className="w-6 h-6 rounded-full object-cover border"
                               />
                             ) : (

@@ -2,8 +2,6 @@
 
 Bu proje, oyuncuların bir araya gelebileceği, etkileşimde bulunabileceği ve çeşitli özelliklerden faydalanabileceği modern bir Minecraft sunucu platformu uygulamasıdır. Next.js, Prisma ve NextAuth.js kullanılarak oluşturulmuştur.
 
-> **Not:** Bu proje bir Node.js/Next.js projesidir. Ödev gereği `requirements.txt` dosyası referans amaçlı eklenmiştir. Gerçek bağımlılık yönetimi için `package.json` ve `bun.lock`/`package-lock.json` dosyalarını kullanın.
-
 ## ✨ Özellikler
 
 - **Kullanıcı Yönetimi:**
@@ -57,7 +55,7 @@ Bu bölüm, projeyi yerel makinenizde geliştirme ve test amacıyla nasıl kurac
 1.  **Projeyi klonlayın:**
 
     ```bash
-    git clone https://github.com/cagriym/munjacraft.git
+    git clone https://github.com/kullanici-adiniz/minecraft-sunucu-platformu.git
     cd minecraft-sunucu-platformu
     ```
 
@@ -70,7 +68,7 @@ Bu bölüm, projeyi yerel makinenizde geliştirme ve test amacıyla nasıl kurac
     ```
 
 3.  **Ortam Değişkenlerini Ayarlayın:**
-    Proje kök dizininde `.env` adında bir dosya oluşturun ve aşağıdaki gibi doldurun:
+    Proje kök dizininde `.env` adında bir dosya oluşturun ve `.env.example` dosyasını referans alarak (eğer varsa) aşağıdaki gibi doldurun:
 
     ```env
     DATABASE_URL="file:./dev.db"
@@ -78,14 +76,15 @@ Bu bölüm, projeyi yerel makinenizde geliştirme ve test amacıyla nasıl kurac
     NEXTAUTH_SECRET="buraya_guvenli_bir_anahtar_girin" # `openssl rand -base64 32` ile oluşturabilirsiniz
     ```
 
-4.  **Veritabanı şemasını uygulayın:**
+4.  **Veritabanı Şemasını Uygulayın:**
     Prisma şemasını veritabanına uygulamak için aşağıdaki komutu çalıştırın:
 
     ```bash
     npx prisma migrate dev
     ```
 
-5.  **Veritabanını örnek verilerle doldurun (isteğe bağlı):**
+5.  **Veritabanını Örnek Verilerle Doldurun (İsteğe Bağlı):**
+    Eğer bir `seed` betiğiniz varsa, veritabanını başlangıç verileriyle doldurabilirsiniz:
     ```bash
     npx prisma db seed
     ```
@@ -101,39 +100,6 @@ npm run dev
 ```
 
 Uygulama varsayılan olarak `http://localhost:3000` adresinde çalışacaktır.
-
-### Build ve Üretim
-
-```bash
-bun run build
-bun run start
-# veya
-npm run build
-npm run start
-
-
-
-
-
-```
-
-**Önemli Not**:
-_Bu proje socket kullanmaktadır. Bağımlılıkları yükledikten sonra server ihtiyacından dolayı birlikte projeyi çalıştırmak için_
-**"bun run server.js"**
-_komutu yeterlidir_
-
-### Örnek Admin Giriş Bilgileri
-
-```
-E-posta: xmemo051708@gmail.com
-Şifre: 449296memolIi
-```
-
-### Diğer Kullanıcı Giriş Bilgileri
-
-```
-E-posta: //tüm e-postalar prismada mevcuttur.
-Şifre: user1234  (admin hariç tüm hesaplar için)
 
 ## scripts
 
@@ -157,4 +123,3 @@ E-posta: //tüm e-postalar prismada mevcuttur.
 ---
 
 Bu README dosyası, projenizin mevcut durumuna göre oluşturulmuştur. Proje geliştikçe güncellemeyi unutmayın.
-```
