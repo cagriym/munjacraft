@@ -45,8 +45,8 @@ Minecraft sunucu yönetimi ve topluluk etkileşimi için geliştirilmiş, kullan
 
 ### 👑 Admin
 
-- **E-posta:** `xmemo051708@gmail.com`
-- **Şifre:** `449296memolIi`
+- **E-posta:** `admin@gmail.com`
+- **Şifre:** `admin`
 
 ### 👤 Diğer Kullanıcılar
 
@@ -57,4 +57,3 @@ Minecraft sunucu yönetimi ve topluluk etkileşimi için geliştirilmiş, kullan
 
 - Proje **SQLite** veritabanı ile çalışır.
 - Tüm kullanıcıların e-posta adresleri veritabanında kayıtlıdır.
-- Proje gereksinimleri ve detaylar için `proje gereksinimleri.txt` dosyasına bakınız.
