@@ -1397,55 +1397,61 @@ const Messages = ({
                 <>
                   <div className="font-semibold mb-2">Arama Sonuçları</div>
                   <ul className="max-h-48 overflow-y-auto divide-y">
-                    {searchResults.map((u: any) => {
-                      const isFriend = friends.some((f: any) => f.id === u.id);
-                      return (
-                        <li
-                          key={u.id}
-                          className="flex items-center justify-between p-2 gap-2"
-                        >
-                          <span>{u.nickname || u.email}</span>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => router.push(`/profile/${u.id}`)}
-                            >
-                              Profilini Görüntüle
-                            </Button>
-                            {isFriend ? (
+                    {searchResults
+                      .filter(
+                        (u: any) => String(u.id) !== String(session?.user?.id)
+                      )
+                      .map((u: any) => {
+                        const isFriend = friends.some(
+                          (f: any) => f.id === u.id
+                        );
+                        return (
+                          <li
+                            key={u.id}
+                            className="flex items-center justify-between p-2 gap-2"
+                          >
+                            <span>{u.nickname || u.email}</span>
+                            <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                variant="default"
-                                onClick={() => {
-                                  setShowUserSearch(false);
-                                  setSelectedFriend(u.id);
-                                  if (typeof window !== "undefined") {
-                                    localStorage.setItem(
-                                      "profileActiveTab",
-                                      "messages"
-                                    );
-                                    if (!handleTabChange)
-                                      window.location.reload();
-                                  }
-                                  if (typeof handleTabChange === "function")
-                                    handleTabChange("messages");
-                                }}
+                                variant="secondary"
+                                onClick={() => router.push(`/profile/${u.id}`)}
                               >
-                                Mesaj
+                                Profilini Görüntüle
                               </Button>
-                            ) : (
-                              <Button
-                                size="sm"
-                                onClick={() => handleAddFriend(u.id, u)}
-                              >
-                                Ekle
-                              </Button>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
+                              {isFriend ? (
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() => {
+                                    setShowUserSearch(false);
+                                    setSelectedFriend(u.id);
+                                    if (typeof window !== "undefined") {
+                                      localStorage.setItem(
+                                        "profileActiveTab",
+                                        "messages"
+                                      );
+                                      if (!handleTabChange)
+                                        window.location.reload();
+                                    }
+                                    if (typeof handleTabChange === "function")
+                                      handleTabChange("messages");
+                                  }}
+                                >
+                                  Mesaj
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleAddFriend(u.id, u)}
+                                >
+                                  Ekle
+                                </Button>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      })}
                   </ul>
                   {/* Son arananlar da gösterilsin */}
                   {recentUsers.length > 0 && (

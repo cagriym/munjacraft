@@ -14,7 +14,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 // Kullanıcı bilgilerini ve rütbeleri tanımlayan arayüzler
 interface UserProfile {
@@ -130,6 +131,11 @@ export default function RanksPage() {
   const [balanceError, setBalanceError] = useState("");
   const [balanceBlur, setBalanceBlur] = useState(true);
   const [showRankInfoPanel, setShowRankInfoPanel] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editRank, setEditRank] = useState<Rank | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editFeatures, setEditFeatures] = useState<string[]>([]);
+  const [editPrice, setEditPrice] = useState(0);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -142,6 +148,14 @@ export default function RanksPage() {
     fetchProfile();
     (window as any).fetchProfile = fetchProfile;
   }, []);
+
+  useEffect(() => {
+    if (editRank) {
+      setEditName(rankNameToDisplay[editRank.name] || editRank.name);
+      setEditFeatures(editRank.features);
+      setEditPrice(editRank.price);
+    }
+  }, [editRank]);
 
   const handlePurchase = async (rank: Rank) => {
     if (!session?.user) {
@@ -404,10 +418,24 @@ export default function RanksPage() {
             key={rank.name}
             className="bg-gray-800 border-gray-700 text-white flex flex-col min-w-[260px] max-w-[320px] w-full sm:w-[300px]"
           >
-            <CardHeader className={`text-white rounded-t-lg ${rank.color}`}>
+            <CardHeader
+              className={`text-white rounded-t-lg ${rank.color} flex items-center justify-between`}
+            >
               <CardTitle className="text-2xl font-bold text-center">
                 {rank.emoji} {rankNameToDisplay[rank.name]}
               </CardTitle>
+              {isAdmin && (
+                <button
+                  className="ml-2 p-1 rounded hover:bg-gray-700"
+                  onClick={() => {
+                    setEditRank(rank);
+                    setShowEditDialog(true);
+                  }}
+                  title="Düzenle"
+                >
+                  <Pencil className="w-5 h-5 text-white" />
+                </button>
+              )}
             </CardHeader>
             <CardContent className="p-6 flex-grow flex flex-col">
               <p className="text-3xl font-bold text-center mb-4">
@@ -509,6 +537,71 @@ export default function RanksPage() {
           </div>
         </div>
       </div>
+
+      {showEditDialog && editRank && (
+        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+          <DialogContent className="bg-gray-800 text-white border-gray-700">
+            <DialogHeader>
+              <DialogTitle>Rütbe Düzenle</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-4">
+              <label>
+                İsim:
+                <Input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="mt-1"
+                />
+              </label>
+              <label>
+                Açıklama (her satır bir özellik):
+                <Textarea
+                  value={editFeatures.join("\n")}
+                  onChange={(e) => setEditFeatures(e.target.value.split("\n"))}
+                  className="mt-1"
+                />
+              </label>
+              <label>
+                Fiyat (TL):
+                <Input
+                  type="number"
+                  value={editPrice}
+                  onChange={(e) => setEditPrice(Number(e.target.value))}
+                  className="mt-1"
+                />
+              </label>
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={async () => {
+                  // Güncelleme API çağrısı
+                  await fetch("/api/ranks/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      name: editRank.name,
+                      newName: editName,
+                      features: editFeatures,
+                      price: editPrice,
+                    }),
+                  });
+                  setShowEditDialog(false);
+                  // TODO: ranks listesini güncelle
+                  window.location.reload();
+                }}
+              >
+                Kaydet
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowEditDialog(false)}
+              >
+                İptal
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
