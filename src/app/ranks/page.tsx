@@ -14,6 +14,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // Kullanıcı bilgilerini ve rütbeleri tanımlayan arayüzler
 interface UserProfile {
@@ -128,6 +129,7 @@ export default function RanksPage() {
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [balanceError, setBalanceError] = useState("");
   const [balanceBlur, setBalanceBlur] = useState(true);
+  const [showRankInfoPanel, setShowRankInfoPanel] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -146,29 +148,30 @@ export default function RanksPage() {
       toast.error("Satın alım için giriş yapmalısınız.");
       return;
     }
-
+    if (profile && profile.rank) {
+      const confirm = window.confirm(
+        "Zaten bir rütbeniz var. Yeni bir rütbe almak istediğinize emin misiniz?"
+      );
+      if (!confirm) return;
+    }
     if (session.user.balance < rank.price) {
       toast.error("Yetersiz bakiye!");
       return;
     }
-
     if (session.user.role === "ADMIN") {
       toast.info("Adminler rütbe satın alamaz.");
       return;
     }
-
     try {
       const response = await fetch("/api/ranks/purchase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rankName: rank.name, price: rank.price }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Rütbe satın alınamadı.");
       }
-
       await update();
       if (typeof (window as any).fetchProfile === "function")
         (window as any).fetchProfile();
@@ -223,6 +226,11 @@ export default function RanksPage() {
       toast.error(
         "Lütfen hediye göndermek istediğiniz kişinin oyun nickini girin."
       );
+      return;
+    }
+    if (profile && profile.role === "ADMIN" && profile.nickname === nick) {
+      toast.error("Admin kendi hesabına hediye gönderemez!");
+      window.alert("Admin kendi hesabına hediye gönderemez!");
       return;
     }
     setGiftLoading((prev) => ({ ...prev, [rank.name]: true }));
@@ -449,6 +457,57 @@ export default function RanksPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Sağda kayan rütbe bilgi paneli */}
+      <div className="fixed right-0 bottom-32 z-50 flex flex-col items-end">
+        <button
+          onClick={() => setShowRankInfoPanel((v) => !v)}
+          className="bg-blue-600 text-white rounded-l-full px-3 py-2 shadow-lg flex items-center transition-all hover:bg-blue-700"
+          style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+          aria-label={showRankInfoPanel ? "Kapat" : "Rütbe Bilgisi Aç"}
+        >
+          {showRankInfoPanel ? (
+            <ChevronRight className="w-5 h-5" />
+          ) : (
+            <ChevronLeft className="w-5 h-5" />
+          )}
+          <span className="ml-1 text-sm font-semibold">Rütbe Bilgisi</span>
+        </button>
+        <div
+          className={`transition-all duration-500 bg-white text-gray-900 shadow-xl rounded-l-xl p-5 w-72 mt-2 ${
+            showRankInfoPanel
+              ? "translate-x-0 opacity-100"
+              : "translate-x-full opacity-0 pointer-events-none"
+          }`}
+          style={{ minHeight: 180 }}
+        >
+          <h3 className="text-lg font-bold mb-2 text-blue-700">
+            Mevcut Rütbe Bilgileri
+          </h3>
+          <div className="mb-1">
+            <span className="font-semibold">Rütbe: </span>
+            {profile
+              ? profile.role === "ADMIN"
+                ? rankNameToDisplay["ADMIN"]
+                : rankNameToDisplay[profile.rank] || "Kullanıcı"
+              : "..."}
+          </div>
+          <div className="mb-1">
+            <span className="font-semibold">Alma Tarihi: </span>
+            {alisTarihi ? alisTarihi.toLocaleString("tr-TR") : "-"}
+          </div>
+          <div className="mb-1">
+            <span className="font-semibold">Bitiş Tarihi: </span>
+            {bitisTarihi ? bitisTarihi.toLocaleString("tr-TR") : "-"}
+          </div>
+          <div className="mb-1">
+            <span className="font-semibold">Kalan Süre: </span>
+            {kalanGun !== null && kalanSaat !== null
+              ? `${kalanGun} gün ${kalanSaat} saat`
+              : "-"}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -575,8 +575,12 @@ const UserManagement = AdminUsersPage;
 
 const Messages = ({
   handleTabChange,
+  selectedFriend,
+  setSelectedFriend,
 }: {
   handleTabChange?: (tab: string) => void;
+  selectedFriend: number | null;
+  setSelectedFriend: React.Dispatch<React.SetStateAction<number | null>>;
 }) => {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
@@ -585,7 +589,6 @@ const Messages = ({
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [addLoading, setAddLoading] = useState(false);
   const [addError, setAddError] = useState("");
-  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
   const [pendingRequests, setPendingRequests] = useState({
     incoming: [],
@@ -593,7 +596,6 @@ const Messages = ({
   });
   const router = useRouter();
   const [friends, setFriends] = useState<any[]>([]);
-  const [selectedFriend, setSelectedFriend] = useState<number | null>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -1503,6 +1505,7 @@ const Messages = ({
                 const isOnline =
                   f.lastSeen &&
                   new Date(f.lastSeen) > new Date(Date.now() - 10 * 1000);
+                const isSelected = selectedFriend === f.id;
                 return (
                   <li
                     key={f.id}
@@ -1510,25 +1513,35 @@ const Messages = ({
                       isOnline ? "" : "text-gray-400"
                     }`}
                   >
-                    {f.avatar ? (
-                      <img
-                        src={f.avatar}
-                        alt="Avatar"
-                        className="w-6 h-6 rounded-full object-cover border"
-                      />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black">
-                        {f.nickname?.[0]?.toUpperCase() ||
-                          f.fullname?.[0]?.toUpperCase() ||
-                          "?"}
-                      </div>
-                    )}
-                    <a
-                      href={`/profile/${f.id}`}
-                      className="font-semibold hover:underline"
+                    <Link href={`/profile/${f.id}`} passHref legacyBehavior>
+                      <a
+                        tabIndex={-1}
+                        onClick={(e) => e.stopPropagation()}
+                        className="block"
+                      >
+                        {f.avatar ? (
+                          <img
+                            src={f.avatar}
+                            alt="Avatar"
+                            className="w-6 h-6 rounded-full object-cover border cursor-pointer"
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black cursor-pointer">
+                            {f.nickname?.[0]?.toUpperCase() ||
+                              f.fullname?.[0]?.toUpperCase() ||
+                              "?"}
+                          </div>
+                        )}
+                      </a>
+                    </Link>
+                    <span
+                      className={`font-semibold hover:underline cursor-pointer ${
+                        isSelected ? "font-bold bg-blue-100 px-1 rounded" : ""
+                      }`}
+                      onClick={() => setSelectedFriend(f.id)}
                     >
                       {f.nickname || f.fullname || f.email}
-                    </a>
+                    </span>
                     {isOnline && (
                       <span className="w-2 h-2 rounded-full bg-green-500 inline-block ml-1" />
                     )}
@@ -1818,6 +1831,7 @@ export default function ProfilePage() {
   const [friends, setFriends] = useState<any[]>([]);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [selectedFriend, setSelectedFriend] = useState<number | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -1866,7 +1880,13 @@ export default function ProfilePage() {
       case "password":
         return <ChangePassword />;
       case "messages":
-        return <Messages handleTabChange={handleTabChange} />;
+        return (
+          <Messages
+            handleTabChange={handleTabChange}
+            selectedFriend={selectedFriend}
+            setSelectedFriend={setSelectedFriend}
+          />
+        );
       case "ranks":
         return <Ranks />;
       case "users":
@@ -2013,6 +2033,7 @@ export default function ProfilePage() {
                       const isOnline =
                         f.lastSeen &&
                         new Date(f.lastSeen) > new Date(Date.now() - 10 * 1000);
+                      const isSelected = selectedFriend === f.id;
                       return (
                         <li
                           key={f.id}
@@ -2020,25 +2041,41 @@ export default function ProfilePage() {
                             isOnline ? "" : "text-gray-400"
                           }`}
                         >
-                          {f.avatar ? (
-                            <img
-                              src={f.avatar}
-                              alt="Avatar"
-                              className="w-6 h-6 rounded-full object-cover border"
-                            />
-                          ) : (
-                            <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black">
-                              {f.nickname?.[0]?.toUpperCase() ||
-                                f.fullname?.[0]?.toUpperCase() ||
-                                "?"}
-                            </div>
-                          )}
-                          <a
+                          <Link
                             href={`/profile/${f.id}`}
-                            className="font-semibold hover:underline"
+                            passHref
+                            legacyBehavior
+                          >
+                            <a
+                              tabIndex={-1}
+                              onClick={(e) => e.stopPropagation()}
+                              className="block"
+                            >
+                              {f.avatar ? (
+                                <img
+                                  src={f.avatar}
+                                  alt="Avatar"
+                                  className="w-6 h-6 rounded-full object-cover border cursor-pointer"
+                                />
+                              ) : (
+                                <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold border text-black cursor-pointer">
+                                  {f.nickname?.[0]?.toUpperCase() ||
+                                    f.fullname?.[0]?.toUpperCase() ||
+                                    "?"}
+                                </div>
+                              )}
+                            </a>
+                          </Link>
+                          <span
+                            className={`font-semibold hover:underline cursor-pointer ${
+                              isSelected
+                                ? "font-bold bg-blue-100 px-1 rounded"
+                                : ""
+                            }`}
+                            onClick={() => setSelectedFriend(f.id)}
                           >
                             {f.nickname || f.fullname || f.email}
-                          </a>
+                          </span>
                           {isOnline && (
                             <span className="w-2 h-2 rounded-full bg-green-500 inline-block ml-1" />
                           )}

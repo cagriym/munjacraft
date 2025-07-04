@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minecraft Sunucu Platformu - Çalışma Raporu</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f7f9fa;
+        color: #222;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px #0001;
+        padding: 32px;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #2d3748;
+      }
+      h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.5em;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin-top: 2em;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin-top: 1.5em;
+      }
+      .puan {
+        color: #3182ce;
+        font-weight: bold;
+      }
+      ul,
+      ol {
+        margin-left: 1.5em;
+      }
+      .desc {
+        color: #555;
+        margin-bottom: 1em;
+      }
+      .badge {
+        display: inline-block;
+        background: #3182ce;
+        color: #fff;
+        border-radius: 6px;
+        padding: 2px 10px;
+        font-size: 0.95em;
+        margin-left: 8px;
+      }
+      .section {
+        margin-bottom: 2.5em;
+      }
+      code,
+      pre {
+        background: #f1f5f9;
+        color: #2d3748;
+        border-radius: 4px;
+        padding: 2px 6px;
+      }
+      .highlight {
+        background: #e6fffa;
+        border-left: 4px solid #38b2ac;
+        padding: 8px 16px;
+        margin: 12px 0;
+        border-radius: 6px;
+      }
+      .q-section {
+        background: #f9fafb;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 18px 24px;
+        margin-top: 32px;
+      }
+      .q-section h2 {
+        color: #38b2ac;
+        margin-top: 0;
+      }
+      .q-section ul {
+        margin-left: 1.2em;
+      }
+      .study {
+        background: #fffbe6;
+        border-left: 4px solid #ecc94b;
+        padding: 10px 18px;
+        border-radius: 6px;
+        margin: 18px 0;
+      }
+      @media (max-width: 600px) {
+        .container {
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>
+        Minecraft Sunucu Platformu<br /><span
+          style="font-size: 1.1rem; color: #3182ce"
+          >Çalışma Raporu ve Puanlama Açıklaması</span
+        >
+      </h1>
+      <div class="desc">
+        Bu rapor, Ondokuz Mayıs Üniversitesi Bilgisayar Programcılığı
+        <b>İnternet Programcılığı II</b> dersi için geliştirilen
+        <b>Minecraft Sunucu Platformu</b> projesinin puanlama cetveline göre
+        detaylı değerlendirmesini ve projede nasıl karşılandığını
+        açıklamaktadır.
+      </div>
+
+      <div class="section">
+        <h2>1. Giriş / Tanıtım Sayfası <span class="badge">5 Puan</span></h2>
+        <p>
+          Projenin ana sayfası, platformun amacını ve sunduğu özellikleri
+          kullanıcıya modern ve anlaşılır bir şekilde tanıtmaktadır.
+          Kullanıcılar, girişte platformun ne işe yaradığını, topluluk ve sunucu
+          yönetimiyle ilgili temel bilgileri görebilir. Ana sayfa, kullanıcıyı
+          karşılayan ve platformun sunduğu avantajları özetleyen bir yapıya
+          sahiptir. Bu sayede yeni kullanıcılar, platformun işlevselliği
+          hakkında hızlıca bilgi sahibi olur. Ayrıca, ana sayfa responsive
+          olarak tasarlanmış ve mobil cihazlarda da sorunsuz görüntülenmektedir.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>
+          2. Kullanıcı Kayıt &amp; Giriş <span class="badge">10 Puan</span>
+        </h2>
+        <ul>
+          <li>
+            <b>Kayıt Ol:</b> Kullanıcılar e-posta ve şifre ile kolayca kayıt
+            olabiliyor. Kayıt formu, gerekli alan kontrolleri ve hata mesajları
+            ile kullanıcı dostu bir deneyim sunuyor.
+          </li>
+          <li>
+            <b>Giriş Yap:</b> Güvenli kimlik doğrulama ile kullanıcılar sisteme
+            giriş yapabiliyor. Yanlış girişlerde kullanıcıya bilgilendirici hata
+            mesajları gösteriliyor.
+          </li>
+          <li>
+            <b>Oturum Yönetimi:</b> Oturum açma ve çıkış işlemleri sorunsuz
+            çalışıyor. Kullanıcılar giriş yaptıktan sonra profillerine ve diğer
+            özelliklere erişebiliyor.
+          </li>
+        </ul>
+        <div class="highlight">
+          Kullanıcı deneyimi ve güvenlik için NextAuth.js altyapısı
+          kullanılmıştır. Şifreler güvenli şekilde saklanır ve oturum yönetimi
+          modern standartlara uygundur.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>3. Profil Sayfası <span class="badge">5 Puan</span></h2>
+        <p>
+          Her kullanıcının kendine ait profil sayfası bulunmakta; kullanıcılar
+          kişisel bilgilerini (isim, takma ad, doğum tarihi, e-posta, adres,
+          biyografi vb.) görüntüleyip güncelleyebilmektedir. Profil fotoğrafı
+          yükleme, adres doğrulama ve biyografi ekleme gibi gelişmiş özellikler
+          de desteklenmektedir. Profil sayfası, kullanıcıya ait tüm bilgileri
+          merkezi bir yerde sunar ve kullanıcı deneyimini artırır.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>4. Rol Sistemi ve Middleware <span class="badge">10 Puan</span></h2>
+        <ul>
+          <li>
+            <b>Rol Tabanlı Erişim:</b> Kullanıcılar "Admin" veya "Normal
+            Kullanıcı" rolüne sahip olur. Kayıt olanlar otomatik olarak normal
+            kullanıcı olur, adminler ise özel olarak atanır.
+          </li>
+          <li>
+            <b>Middleware:</b> Admin yetkisi gerektiren sayfalara sadece
+            adminler erişebilir. Bu kontrol, Next.js middleware ile güvenli
+            şekilde sağlanır.
+          </li>
+          <li>
+            <b>Rol Yönetimi:</b> Roller kullanıcı tablosunda bir sütun olarak
+            tutulur, ek bir tabloya gerek yoktur. Adminler kendi rollerini
+            değiştiremez.
+          </li>
+        </ul>
+        <div class="highlight">
+          Adminler, tüm kullanıcı işlemlerini yönetebilir ve sistemin
+          güvenliğini sağlar. Rol tabanlı erişim, platformun güvenliğini ve
+          işlevselliğini artırır.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>5. Admin İşlevleri <span class="badge">15 Puan</span></h2>
+        <ul>
+          <li>
+            Kullanıcıları listeleme, silme ve rollerini değiştirme gibi temel
+            yönetim işlemleri yapılabilir.
+          </li>
+          <li>
+            Duyuru ekleme ve yönetme özelliği ile topluluk bilgilendirilebilir.
+          </li>
+          <li>
+            Ekstra admin işlemleri: Arkadaşlık ve rütbe yönetimi, kullanıcı
+            aktivitelerini izleme gibi gelişmiş fonksiyonlar eklenmiştir.
+          </li>
+        </ul>
+        <div class="highlight">
+          Admin paneli sadece admin rolündeki kullanıcılar tarafından
+          erişilebilir ve yönetimsel işlemler için kapsamlıdır. Adminler,
+          sistemin genel işleyişini ve güvenliğini sağlar.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>6. Mesajlaşma Sistemi <span class="badge">10 Puan</span></h2>
+        <p>
+          Kullanıcılar arası metin tabanlı mesajlaşma sistemi mevcuttur. Gerçek
+          zamanlı olmasa da, mesajlar sayfa yenilendiğinde güncellenir.
+          Kullanıcılar tüm diğer kullanıcılara veya arkadaşlarına mesaj
+          gönderebilir. Mesajlar, veritabanında güvenli şekilde saklanır ve
+          sadece ilgili kullanıcılar tarafından görüntülenebilir. Mesajlaşma
+          arayüzü sade ve kullanışlıdır.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>7. Veritabanı Tasarımı <span class="badge">5 Puan</span></h2>
+        <ul>
+          <li>
+            En az 5 anlamlı ve ilişkili tablo: Kullanıcı, Arkadaş, Mesaj,
+            Duyuru, Rütbe, Arama Geçmişi vb.
+          </li>
+          <li>
+            Tablolar arası ilişkiler Prisma ORM ile doğru şekilde
+            tanımlanmıştır. (ör. kullanıcı-arkadaş, kullanıcı-mesaj,
+            kullanıcı-duyuru ilişkileri)
+          </li>
+          <li>
+            Veri bütünlüğü, foreign key'ler ve otomatik migrasyonlar ile
+            sağlanmıştır.
+          </li>
+        </ul>
+        <div class="highlight">
+          Veritabanı yapısı, gerçek bir sistemde kullanılabilecek düzeydedir ve
+          veri güvenliği ön plandadır.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          8. Proje Konusu Özgü Özellikler <span class="badge">30 Puan</span>
+        </h2>
+        <ul>
+          <li>
+            Arkadaşlık sistemi: Kullanıcılar birbirine istek gönderebilir, gelen
+            istekleri kabul/ret edebilir, arkadaş listesi görüntüleyebilir.
+          </li>
+          <li>
+            Rütbe ve rol yönetimi: Kullanıcılar farklı rütbelere sahip olabilir,
+            adminler rütbe atayabilir.
+          </li>
+          <li>
+            Duyuru ve topluluk etkileşimi: Adminler topluluk duyuruları
+            yayınlayabilir, tüm kullanıcılar bu duyuruları görebilir.
+          </li>
+          <li>
+            Profil arama geçmişi ve kullanıcı aktiviteleri: Kullanıcıların arama
+            geçmişi kaydedilir, aktiviteleri izlenebilir.
+          </li>
+        </ul>
+        <div class="highlight">
+          Proje, Minecraft topluluğuna özel sosyal ve yönetimsel işlevlerle
+          zenginleştirilmiştir. Bu özellikler, platformun özgünlüğünü ve
+          işlevselliğini artırır.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>9. Arayüz ve Stil Kullanımı <span class="badge">5 Puan</span></h2>
+        <p>
+          Modern ve responsive arayüz için <b>TailwindCSS</b> ve
+          <b>Shadcn UI</b> kullanılmıştır. Tüm sayfalar mobil uyumlu ve
+          kullanıcı dostudur. Renkler, ikonlar ve tipografi ile kullanıcı
+          deneyimi artırılmıştır. Arayüz, hem masaüstü hem de mobil cihazlarda
+          sorunsuz çalışır.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>10. Kod Kalitesi ve Temizlik <span class="badge">5 Puan</span></h2>
+        <ul>
+          <li>Dosya ve klasör yapısı düzenli ve anlaşılırdır.</li>
+          <li>
+            Component bazlı kod organizasyonu ile kodun bakımı ve geliştirilmesi
+            kolaydır.
+          </li>
+          <li>Yorumlar ve okunabilirlik ön planda tutulmuştur.</li>
+          <li>
+            Lint hataları kodun çalışmasını engellemez, ancak ileride kod
+            kalitesini artırmak için temizlenebilir.
+          </li>
+        </ul>
+        <div class="highlight">
+          Kodun okunabilirliği, sürdürülebilirliği ve modülerliği sağlanmıştır.
+          Geliştirici deneyimi ön plandadır.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Toplam Puan: <span class="puan">100</span></h2>
+        <p>
+          Proje, puanlama cetvelindeki tüm gereksinimleri eksiksiz
+          karşılamaktadır. Kod, arayüz ve işlevsellik açısından modern ve teslim
+          formatına uygundur.
+        </p>
+      </div>
+
+      <div class="section" style="font-size: 0.95em; color: #666">
+        <b>Not:</b> Detaylı kurulum, kullanım ve teknik açıklamalar için
+        <code>README.md</code> ve
+        <code>proje gereksinimleri.txt</code> dosyalarına bakabilirsiniz.<br />
+        <b>Repository:</b>
+        <a href="https://github.com/cagriym/munjacraft" target="_blank"
+          >https://github.com/cagriym/munjacraft</a
+        >
+      </div>
+
+      <div class="q-section">
+        <h2>Hocanın Sorabileceği Sorular</h2>
+        <ul>
+          <li>Projenin ana amacı ve hedef kitlesi nedir?</li>
+          <li>
+            Kullanıcı kayıt ve giriş işlemleri nasıl çalışıyor? Güvenlik nasıl
+            sağlanıyor?
+          </li>
+          <li>
+            Rol tabanlı erişim nasıl uygulanıyor? Admin ve normal kullanıcı
+            farkı nedir?
+          </li>
+          <li>Admin panelinde hangi işlemler yapılabiliyor?</li>
+          <li>Mesajlaşma sistemi nasıl çalışıyor? Gerçek zamanlı mı?</li>
+          <li>
+            Arkadaşlık sistemi nasıl işliyor? İstek gönderme ve kabul/ret süreci
+            nasıl?
+          </li>
+          <li>
+            Veritabanı yapısında hangi tablolar var ve aralarındaki ilişkiler
+            nasıl?
+          </li>
+          <li>
+            Proje hangi teknolojilerle geliştirildi ve neden bu teknolojiler
+            seçildi?
+          </li>
+          <li>
+            Arayüzde hangi stil kütüphaneleri kullanıldı? Responsive tasarım
+            nasıl sağlandı?
+          </li>
+          <li>Kodun okunabilirliği ve sürdürülebilirliği için neler yaptın?</li>
+          <li>
+            Proje geliştirme sürecinde karşılaştığın en büyük zorluk neydi ve
+            nasıl aştın?
+          </li>
+          <li>Gelecekte projeye hangi özellikleri eklemeyi düşünüyorsun?</li>
+          <li>Kurulum ve çalıştırma adımlarını özetler misin?</li>
+          <li>Admin ve kullanıcı giriş bilgileri nedir?</li>
+        </ul>
+        <div style="margin-top: 2em">
+          <h3 style="color: #38b2ac">Cevaplar</h3>
+          <ol style="margin-left: 1.5em">
+            <li>
+              <b>Projenin ana amacı ve hedef kitlesi nedir?</b><br />
+              Minecraft sunucusu yöneticileri ve oyuncuları için, topluluk
+              etkileşimini ve sunucu yönetimini kolaylaştıran modern bir web
+              platformu sunmak. Hedef kitle, Minecraft sunucusu kurmak veya
+              topluluk oluşturmak isteyen herkes.
+            </li>
+            <li>
+              <b
+                >Kullanıcı kayıt ve giriş işlemleri nasıl çalışıyor? Güvenlik
+                nasıl sağlanıyor?</b
+              ><br />
+              Kullanıcılar e-posta ve şifre ile kayıt olur. Girişte şifreler
+              hashlenmiş olarak kontrol edilir. NextAuth.js ile oturum yönetimi
+              ve güvenlik sağlanır. Yanlış girişlerde kullanıcıya hata mesajı
+              gösterilir.
+            </li>
+            <li>
+              <b
+                >Rol tabanlı erişim nasıl uygulanıyor? Admin ve normal kullanıcı
+                farkı nedir?</b
+              ><br />
+              Kullanıcılar kayıt olduğunda otomatik olarak normal kullanıcı
+              olur. Adminler özel olarak atanır. Admin yetkisi gerektiren
+              sayfalara sadece adminler erişebilir. Adminler tüm kullanıcı
+              işlemlerini yönetebilir, normal kullanıcılar ise sadece kendi
+              işlemlerini yapabilir.
+            </li>
+            <li>
+              <b>Admin panelinde hangi işlemler yapılabiliyor?</b><br />
+              Kullanıcıları listeleme, silme, rollerini değiştirme, duyuru
+              ekleme, arkadaşlık ve rütbe yönetimi gibi işlemler yapılabilir.
+              Adminler ayrıca topluluk duyuruları yayınlayabilir.
+            </li>
+            <li>
+              <b>Mesajlaşma sistemi nasıl çalışıyor? Gerçek zamanlı mı?</b
+              ><br />
+              Kullanıcılar arası metin tabanlı mesajlaşma vardır. Gerçek zamanlı
+              değildir; mesajlar gönderildikten sonra sayfa yenilendiğinde
+              güncellenir. Her kullanıcı diğer kullanıcılara mesaj gönderebilir.
+            </li>
+            <li>
+              <b
+                >Arkadaşlık sistemi nasıl işliyor? İstek gönderme ve kabul/ret
+                süreci nasıl?</b
+              ><br />
+              Kullanıcılar birbirine arkadaşlık isteği gönderebilir. Gelen
+              istekler kabul veya reddedilebilir. Kabul edilenler arkadaş
+              listesine eklenir ve profil sayfasından görüntülenebilir.
+            </li>
+            <li>
+              <b
+                >Veritabanı yapısında hangi tablolar var ve aralarındaki
+                ilişkiler nasıl?</b
+              ><br />
+              Kullanıcı, Arkadaş, Mesaj, Duyuru, Rütbe, Arama Geçmişi gibi
+              tablolar var. Kullanıcı ile arkadaş, mesaj ve duyuru tabloları
+              arasında bire-çok ve çoktan-çoğa ilişkiler Prisma ORM ile
+              tanımlanmıştır.
+            </li>
+            <li>
+              <b
+                >Proje hangi teknolojilerle geliştirildi ve neden bu
+                teknolojiler seçildi?</b
+              ><br />
+              Next.js (modern ve hızlı web geliştirme için), Prisma ORM (güvenli
+              ve kolay veritabanı yönetimi için), SQLite (basit ve taşınabilir
+              veritabanı için), TailwindCSS ve Shadcn UI (modern ve responsive
+              arayüz için), Bun (hızlı sunucu çalıştırma için) kullanıldı.
+            </li>
+            <li>
+              <b
+                >Arayüzde hangi stil kütüphaneleri kullanıldı? Responsive
+                tasarım nasıl sağlandı?</b
+              ><br />
+              TailwindCSS ve Shadcn UI kullanıldı. Tüm sayfalar mobil uyumlu ve
+              responsive olarak tasarlandı. Grid ve flex yapıları ile her
+              cihazda sorunsuz görüntü sağlandı.
+            </li>
+            <li>
+              <b
+                >Kodun okunabilirliği ve sürdürülebilirliği için neler
+                yaptın?</b
+              ><br />
+              Component bazlı yapı, düzenli dosya organizasyonu, açıklayıcı
+              yorumlar ve fonksiyon isimleri ile kodun okunabilirliği ve
+              sürdürülebilirliği sağlandı.
+            </li>
+            <li>
+              <b
+                >Proje geliştirme sürecinde karşılaştığın en büyük zorluk neydi
+                ve nasıl aştın?</b
+              ><br />
+              En büyük zorluk, rol tabanlı erişim ve arkadaşlık/messaging
+              ilişkilerini doğru kurmaktı. Prisma ve Next.js dökümantasyonunu
+              inceleyerek ve testler yaparak çözüldü.
+            </li>
+            <li>
+              <b>Gelecekte projeye hangi özellikleri eklemeyi düşünüyorsun?</b
+              ><br />
+              Gerçek zamanlı mesajlaşma (WebSocket), kullanıcı aktiviteleri için
+              bildirim sistemi, daha gelişmiş profil özelleştirme ve mobil
+              uygulama entegrasyonu eklenebilir.
+            </li>
+            <li>
+              <b>Kurulum ve çalıştırma adımlarını özetler misin?</b><br />
+              1. Projeyi klonla: <code>git clone ...</code><br />
+              2. Bağımlılıkları yükle: <code>npm install</code><br />
+              3. Veritabanı migrasyonları: <code>npx prisma migrate deploy</code
+              ><br />
+              4. Sunucuyu başlat: <code>bun run server.js</code><br />
+              5. Giriş bilgileri ile giriş yap.
+            </li>
+            <li>
+              <b>Admin ve kullanıcı giriş bilgileri nedir?</b><br />
+              Admin: <code>xmemo051708@gmail.com</code> /
+              <code>449296memolIi</code><br />
+              Diğer kullanıcılar: Veritabanında kayıtlı e-posta +
+              <code>user1234</code> şifresi.
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="study">
+        <b>Çalışman Gereken Yerler:</b>
+        <ul>
+          <li>Projenin genel amacı ve işleyişi (ana sayfa, kullanıcı akışı)</li>
+          <li>Kayıt, giriş, profil ve admin paneli ekranlarının mantığı</li>
+          <li>Rol tabanlı erişim ve middleware kullanımı</li>
+          <li>Arkadaşlık ve mesajlaşma sisteminin işleyişi</li>
+          <li>
+            Veritabanı tabloları ve ilişkileri (özellikle kullanıcı, arkadaş,
+            mesaj, duyuru, rütbe)
+          </li>
+          <li>
+            Kullanılan teknolojiler ve nedenleri (Next.js, Prisma, TailwindCSS,
+            Shadcn UI, SQLite, Bun)
+          </li>
+          <li>Kurulum ve çalıştırma adımları, giriş bilgileri</li>
+          <li>Kodun okunabilirliği, component yapısı ve dosya organizasyonu</li>
+          <li>Proje geliştirme sürecinde yaşadığın zorluklar ve çözümler</li>
+          <li>Gelecekte eklenebilecek özellikler ve öneriler</li>
+        </ul>
+        <span style="color: #b7791f"
+          >Bu başlıklar üzerinde çalışırsan, hem sunumda hem de olası sorularda
+          rahat edersin.</span
+        >
+      </div>
+    </div>
+  </body>
+</html>

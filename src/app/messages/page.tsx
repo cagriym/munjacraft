@@ -407,40 +407,35 @@ function MessagesPageContent() {
           className="p-4 space-y-2"
           style={{ maxHeight: 180, overflowY: "auto" }}
         >
-          {friends?.map((friend) => (
-            <Link
-              href={`/profile/${
-                friend.requesterId === me.id
-                  ? friend.addressee.id
-                  : friend.requester.id
-              }`}
-              key={friend.id}
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700 cursor-pointer"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={
-                  (friend.requesterId === me.id
-                    ? friend.addressee.avatar
-                    : friend.requester.avatar) ||
-                  `https://ui-avatars.com/api/?name=${
-                    friend.requesterId === me.id
-                      ? friend.addressee.nickname
-                      : friend.requester.nickname
-                  }`
-                }
-                alt="avatar"
-                width={40}
-                height={40}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <span className="font-semibold">
-                {friend.requesterId === me.id
-                  ? friend.addressee.nickname
-                  : friend.requester.nickname}
-              </span>
-            </Link>
-          ))}
+          {friends?.map((friend) => {
+            const friendUser =
+              friend.requesterId === me.id
+                ? friend.addressee
+                : friend.requester;
+            const displayName =
+              friendUser.nickname || friendUser.fullname || friendUser.email;
+            const avatarUrl =
+              friendUser.avatar ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                displayName
+              )}`;
+            return (
+              <div
+                key={friend.id}
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700 cursor-pointer"
+                onClick={() => setSelectedUser(String(friendUser.id))}
+              >
+                <Image
+                  src={avatarUrl}
+                  alt="avatar"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <span className="font-semibold">{displayName}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="w-2/3 flex flex-col">
