@@ -1,59 +1,42 @@
-# 🎮 Minecraft Sunucu Platformu
+﻿# Minecraft Sunucu Platformu
 
-## 🚀 Proje Tanımı
+Minecraft sunucu yonetimi ve topluluk etkilesimi icin gelistirilmis bir web uygulamasi. Kullanici yonetimi, rol tabanli erisim ve mesajlasma modulleri icerir.
 
-Minecraft sunucu yönetimi ve topluluk etkileşimi için geliştirilmiş, kullanıcı yönetimi, rol tabanlı erişim ve mesajlaşma sistemi içeren bir web uygulamasıdır.
+## Teknolojiler
+- Next.js
+- Prisma ORM
+- SQLite
+- TailwindCSS
+- Shadcn UI
 
-## 🛠️ Kullanılan Teknolojiler
+## Ozellikler
+- Kayit / giris / profil yonetimi
+- Rol tabanli erisim (Admin ve Kullanici)
+- Admin paneli (kullanici yonetimi, rol degistirme)
+- Mesajlasma ve arkadaslik sistemi
+- Duyurular
 
-- ⚡ **Next.js**
-- 🗄️ **Prisma ORM**
-- 🗃️ **SQLite**
-- 🎨 **TailwindCSS**
-- 🧩 **Shadcn UI**
+## Kurulum
+```bash
+git clone <repo-url>
+cd minecraft-sunucu-platformu
+npm install
+npx prisma migrate deploy
+```
 
-## ✨ Temel Özellikler
+## Calistirma
+```bash
+bun run server.js
+```
 
-- 📝 Kayıt olma, giriş/çıkış ve profil yönetimi
-- 🛡️ Rol tabanlı erişim (**Admin & Normal Kullanıcı**)
-- 🧑‍💼 **Admin paneli:** kullanıcı yönetimi, rol değiştirme, kullanıcı silme, ek admin işlemleri
-- 💬 Kullanıcılar arası mesajlaşma
-- 👥 Arkadaşlık sistemi
-- 📢 Duyuru ve profil arama geçmişi
+## Ornek Giris
+Admin:
+- Email: admin@gmail.com
+- Sifre: admin
 
-## ⚙️ Kurulum ve Çalıştırma
+Kullanici:
+- Email: veritabaninda kayitli
+- Sifre: user1234
 
-1. 📥 Depoyu klonlayın:
-   ```bash
-   git clone <repo-url>
-   cd minecraft-sunucu-platformu
-   ```
-2. 📦 Bağımlılıkları yükleyin:
-   ```bash
-   npm install
-   ```
-3. 🗄️ Veritabanı migrasyonlarını çalıştırın:
-   ```bash
-   npx prisma migrate deploy
-   ```
-4. 🖥️ Sunucuyu başlatın:
-   ```bash
-   bun run server.js
-   ```
-
-## 🔑 Giriş Bilgileri
-
-### 👑 Admin
-
-- **E-posta:** `admin@gmail.com`
-- **Şifre:** `admin`
-
-### 👤 Diğer Kullanıcılar
-
-- **E-posta:** (veritabanında kayıtlı)
-- **Şifre:** `user1234`
-
-## 📌 Notlar
-
-- Proje **SQLite** veritabanı ile çalışır.
-- Tüm kullanıcıların e-posta adresleri veritabanında kayıtlıdır.
+## Notlar
+- Veritabani SQLite kullanir.
