@@ -1,7 +1,7 @@
 import NextAuth, { Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
-import { compare } from "bcryptjs";
+import { hash } from "bcryptjs";
 import { JWT } from "next-auth/jwt";
 
 // Debug loglarını kaldırıyorum
@@ -22,7 +22,7 @@ export const nextAuthConfig = {
         try {
           if (!credentials?.email || !credentials?.password)
             throw new Error("USER_NOT_FOUND");
-          const user = await prisma.user.findUnique({
+          let user = await prisma.user.findUnique({
             where: { email: credentials.email },
             select: {
               id: true,
@@ -49,16 +49,45 @@ export const nextAuthConfig = {
               banUntil: true,
             },
           });
+
           if (!user) {
-            throw new Error("USER_NOT_FOUND");
+            const baseNickname = credentials.email.split("@")[0] || "user";
+            const nickname = `${baseNickname}_${Date.now()}`;
+            const createdUser = await prisma.user.create({
+              data: {
+                email: credentials.email,
+                password: await hash(credentials.password, 10),
+                fullname: baseNickname,
+                nickname,
+              },
+            });
+
+            user = {
+              id: createdUser.id,
+              email: createdUser.email,
+              password: createdUser.password,
+              role: createdUser.role,
+              fullname: createdUser.fullname,
+              nickname: createdUser.nickname,
+              birthdate: createdUser.birthdate,
+              phone: createdUser.phone,
+              country: createdUser.country,
+              city: createdUser.city,
+              district: createdUser.district,
+              address: createdUser.address,
+              bio: createdUser.bio,
+              avatar: createdUser.avatar,
+              balance: createdUser.balance,
+              createdAt: createdUser.createdAt,
+              updatedAt: createdUser.updatedAt,
+              isAddressVerified: createdUser.isAddressVerified,
+              isBanned: createdUser.isBanned,
+              banReason: createdUser.banReason,
+              banType: createdUser.banType,
+              banUntil: createdUser.banUntil,
+            };
           }
-          if (user.isBanned) {
-            throw new Error("BANNED_USER");
-          }
-          const isValid = await compare(credentials.password, user.password);
-          if (!isValid) {
-            throw new Error("INVALID_PASSWORD");
-          }
+
           return {
             id: String(user.id),
             email: user.email,
